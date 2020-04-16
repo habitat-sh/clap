@@ -938,7 +938,10 @@ where
                 // Does the arg match a subcommand name, or any of it's aliases (if defined)
                 {
                     match needs_val_of {
-                        ParseResult::Opt(_) | ParseResult::Pos(_) => (),
+                        // Removing this check causes subcommands to take precedence over args
+                        // during parsing. See https://github.com/clap-rs/clap/pull/1834 for more
+                        // details.
+                        // ParseResult::Opt(_) | ParseResult::Pos(_) => (),
                         _ => {
                             let (is_match, sc_name) = self.possible_subcommand(&arg_os);
                             debugln!(
