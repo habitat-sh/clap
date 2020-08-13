@@ -1048,15 +1048,25 @@ macro_rules! _find_by_short {
 macro_rules! find_subcmd {
     ($_self:expr, $sc:expr) => {{
         $_self.subcommands.iter().find(|s| {
-            &*s.p.meta.name == $sc
-                || (s.p.meta.aliases.is_some()
-                    && s.p
-                        .meta
-                        .aliases
-                        .as_ref()
-                        .unwrap()
-                        .iter()
-                        .any(|&(n, _)| n == $sc))
+            let name_match = &*s.p.meta.name == $sc;
+            let mut matched_alias = None;
+            let alias_match = (s.p.meta.aliases.is_some()
+                && s.p.meta.aliases.as_ref().unwrap().iter().any(|&(n, _)| {
+                    if n == $sc {
+                        matched_alias = Some(n);
+                        true
+                    } else {
+                        false
+                    }
+                }));
+            if let Some(alias) = matched_alias {
+                eprintln!(
+                    "WARNING: Use of \"{}\" as an alias for {:?} is deprecated. \
+                    Please update your automation and processes accordingly.",
+                    alias, s.p.meta.name
+                );
+            }
+            name_match || alias_match
         })
     }};
 }
