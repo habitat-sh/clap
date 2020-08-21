@@ -706,7 +706,7 @@ where
             return (false, None);
         }
         if !self.is_set(AS::InferSubcommands) {
-            if let Some(sc) = find_subcmd!(self, arg_os) {
+            if let Some(sc) = find_subcmd_with_warning!(self, arg_os) {
                 return (true, Some(&sc.p.meta.name));
             }
         } else {
@@ -1208,7 +1208,7 @@ where
         if !sc_is_external {
             if let Some(ref pos_sc_name) = subcmd_name {
                 let sc_name = {
-                    find_subcmd!(self, pos_sc_name)
+                    find_subcmd_with_warning!(self, pos_sc_name)
                         .expect(INTERNAL_ERROR_MSG)
                         .p
                         .meta

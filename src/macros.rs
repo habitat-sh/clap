@@ -1045,7 +1045,7 @@ macro_rules! _find_by_short {
     }};
 }
 
-macro_rules! find_subcmd {
+macro_rules! find_subcmd_with_warning {
     ($_self:expr, $sc:expr) => {{
         $_self.subcommands.iter().find(|s| {
             let name_match = &*s.p.meta.name == $sc;
@@ -1067,6 +1067,22 @@ macro_rules! find_subcmd {
                 );
             }
             name_match || alias_match
+        })
+    }};
+}
+
+macro_rules! find_subcmd {
+    ($_self:expr, $sc:expr) => {{
+        $_self.subcommands.iter().find(|s| {
+            &*s.p.meta.name == $sc
+                || (s.p.meta.aliases.is_some()
+                    && s.p
+                        .meta
+                        .aliases
+                        .as_ref()
+                        .unwrap()
+                        .iter()
+                        .any(|&(n, _)| n == $sc))
         })
     }};
 }
