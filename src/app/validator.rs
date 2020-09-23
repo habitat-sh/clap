@@ -93,6 +93,12 @@ impl<'a, 'b, 'z> Validator<'a, 'b, 'z> {
         A: AnyArg<'a, 'b> + Display,
     {
         debugln!("Validator::validate_arg_values: arg={:?}", arg.name());
+        // Do not try and validate arguments if this argument was not explicitly set. If the
+        // argument was not explicitly set, we do not want to try parsing the default value as that
+        // might lead to an unnecessary error.
+        if ma.occurs == 0 && ma.env_set == false {
+            return Ok(());
+        }
         for val in &ma.vals {
             if self.0.is_set(AS::StrictUtf8) && val.to_str().is_none() {
                 debugln!(
